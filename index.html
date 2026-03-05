@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickJob - Lead City University</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.33); }
+            80%, 100% { opacity: 0; }
+        }
+        
+        .hostel-card {
+            transition: all 0.3s ease;
+        }
+        
+        .hostel-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .hostel-card.selected {
+            border-color: #667eea;
+            background: #f3f4ff;
+        }
+        
+        .saved-location {
+            transition: all 0.2s ease;
+        }
+        
+        .saved-location:hover {
+            transform: translateX(4px);
+        }
+        
+        .step-active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .step-completed {
+            background: #10b981;
+            color: white;
+        }
+        
+        .role-card {
+            transition: all 0.3s ease;
+        }
+        
+        .role-card:hover {
+            transform: scale(1.02);
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+    <!-- App Container -->
+    <div class="max-w-md mx-auto min-h-screen bg-white shadow-2xl relative overflow-hidden">
+        
+        <!-- ROLE SELECTION (First Screen - No Going Back) -->
+        <div id="roleSelection" class="h-full flex flex-col justify-center items-center p-8 gradient-bg text-white slide-up">
+            <div class="w-24 h-24 bg-white/20 rounded-3xl flex items-center justify-center mb-6 backdrop-blur-sm">
+                <i class="fas fa-bolt text-4xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold mb-2">QuickJob</h1>
+            <p class="text-white/80 mb-12 text-center">Lead City University<br>Campus Delivery Service</p>
+            
+            <p class="text-sm font-medium mb-6 text-white/90">Choose how you want to use the app:</p>
+            
+            <div class="w-full space-y-4">
+                <button onclick="selectRole('agent')" class="role-card w-full bg-white text-gray-800 p-6 rounded-2xl shadow-xl flex items-center gap-4 hover:shadow-2xl">
+                    <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center text-2xl">
+                        🏃
+                    </div>
+                    <div class="text-left">
+                        <h3 class="font-bold text-lg">I want to WORK</h3>
+                        <p class="text-sm text-gray-500">Earn money delivering to hostels</p>
+                    </div>
+                    <i class="fas fa-arrow-right text-gray-400 ml-auto"></i>
+                </button>
+                
+                <button onclick="selectRole('student')" class="role-card w-full bg-white text-gray-800 p-6 rounded-2xl shadow-xl flex items-center gap-4 hover:shadow-2xl">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-2xl">
+                        📦
+                    </div>
+                    <div class="text-left">
+                        <h3 class="font-bold text-lg">I want to REQUEST</h3>
+                        <p class="text-sm text-gray-500">Get food delivered to my room</p>
+                    </div>
+                    <i class="fas fa-arrow-right text-gray-400 ml-auto"></i>
+                </button>
+            </div>
+            
+            <p class="text-xs text-white/60 mt-8 text-center">This choice cannot be changed later<br>Create a new account to switch</p>
+        </div>
+
+        <!-- AGENT SIGN UP -->
+        <div id="agentSignup" class="hidden h-full overflow-y-auto hide-scrollbar bg-white slide-up">
+            <div class="gradient-bg text-white px-6 py-6 sticky top-0 z-50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-user-plus text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl">Agent Registration</h1>
+                        <p class="text-xs text-white/80">Start earning on campus</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-5 pb-24">
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+                    <p class="text-sm text-blue-800"><i class="fas fa-info-circle mr-2"></i>You'll deliver only to hostels matching your gender</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="agentFullName" placeholder="Enter your full name" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Student ID Card Number <span class="text-red-500">*</span></label>
+                    <input type="text" id="agentStudentId" placeholder="e.g., LC/2021/001" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Department & Level <span class="text-red-500">*</span></label>
+                    <input type="text" id="agentDepartment" placeholder="e.g., Computer Science - 300L" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-gray-500 font-medium">+234</span>
+                        <input type="tel" id="agentPhone" placeholder="8012345678" class="w-full pl-14 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Gender <span class="text-red-500">*</span></label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectAgentGender('male')" id="agentGenderMale" class="agent-gender-btn py-3 px-4 rounded-xl border-2 border-gray-200 flex items-center justify-center gap-2 hover:border-indigo-500 transition">
+                            <i class="fas fa-male text-blue-500 text-xl"></i>
+                            <span class="font-medium">Male</span>
+                        </button>
+                        <button onclick="selectAgentGender('female')" id="agentGenderFemale" class="agent-gender-btn py-3 px-4 rounded-xl border-2 border-gray-200 flex items-center justify-center gap-2 hover:border-indigo-500 transition">
+                            <i class="fas fa-female text-pink-500 text-xl"></i>
+                            <span class="font-medium">Female</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Photo of Yourself <span class="text-red-500">*</span></label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-500 transition cursor-pointer" onclick="document.getElementById('agentPhoto').click()">
+                        <i class="fas fa-camera text-3xl text-gray-400 mb-2"></i>
+                        <p class="text-sm text-gray-500">Tap to upload photo</p>
+                        <input type="file" id="agentPhoto" accept="image/*" class="hidden" onchange="previewPhoto(this, 'agentPhotoPreview')">
+                        <img id="agentPhotoPreview" class="hidden w-32 h-32 rounded-xl mx-auto mt-3 object-cover">
+                    </div>
+                </div>
+
+                <button onclick="completeAgentSignup()" class="w-full gradient-bg text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 mt-4">
+                    Create Agent Account <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- STUDENT SIGN UP -->
+        <div id="studentSignup" class="hidden h-full overflow-y-auto hide-scrollbar bg-white slide-up">
+            <div class="gradient-bg text-white px-6 py-6 sticky top-0 z-50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-user-plus text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl">Student Registration</h1>
+                        <p class="text-xs text-white/80">Get food delivered to your room</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-5 pb-24">
+                <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-4">
+                    <p class="text-sm text-indigo-800"><i class="fas fa-info-circle mr-2"></i>You'll add delivery locations when placing orders</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="studentFullName" placeholder="Enter your full name" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Student ID Card Number <span class="text-red-500">*</span></label>
+                    <input type="text" id="studentIdCard" placeholder="e.g., LC/2021/001" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-gray-500 font-medium">+234</span>
+                        <input type="tel" id="studentPhone" placeholder="8012345678" class="w-full pl-14 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Department (Optional)</label>
+                    <input type="text" id="studentDepartment" placeholder="e.g., Mass Communication" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                </div>
+
+                <button onclick="completeStudentSignup()" class="w-full gradient-bg text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 mt-4">
+                    Create Account <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- STUDENT DASHBOARD -->
+        <div id="studentDashboard" class="hidden h-full flex flex-col bg-gray-50 slide-up">
+            <!-- Header -->
+            <div class="gradient-bg text-white px-6 py-4 sticky top-0 z-50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="font-bold text-xl">QuickJob</h1>
+                        <p class="text-xs text-white/80" id="studentWelcomeName">Welcome!</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-xs font-medium">8 Agents Online</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto hide-scrollbar p-4 pb-24 space-y-4">
+                
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="showNewOrder()" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-left hover:shadow-md transition">
+                        <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 mb-2">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <p class="font-bold text-sm text-gray-800">New Order</p>
+                        <p class="text-xs text-gray-500">Request delivery</p>
+                    </button>
+                    
+                    <button onclick="showSavedLocations()" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-left hover:shadow-md transition">
+                        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-green-600 mb-2">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <p class="font-bold text-sm text-gray-800">My Locations</p>
+                        <p class="text-xs text-gray-500" id="savedLocationCount">0 saved</p>
+                    </button>
+                </div>
+
+                <!-- Active Orders -->
+                <div id="activeOrdersSection">
+                    <h3 class="font-bold text-gray-800 mb-3 px-1">Active Orders</h3>
+                    
+                    <!-- No Active Orders -->
+                    <div id="noActiveOrders" class="bg-white rounded-2xl p-8 text-center border border-gray-100">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-box-open text-gray-400 text-2xl"></i>
+                        </div>
+                        <p class="text-gray-500 text-sm">No active orders</p>
+                        <button onclick="showNewOrder()" class="mt-3 text-indigo-600 font-medium text-sm">Place your first order</button>
+                    </div>
+
+                    <!-- Active Order Card (Hidden by default) -->
+                    <div id="activeOrderCard" class="hidden bg-white rounded-2xl shadow-lg border border-indigo-100 overflow-hidden">
+                        <div class="bg-indigo-50 p-4 border-b border-indigo-100">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-indigo-600 uppercase tracking-wide">Order #QJ-001</span>
+                                <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded-full">Active</span>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4">
+                            <div class="flex items-center gap-3 mb-4">
+                                <img src="https://i.pravatar.cc/150?img=11" class="w-12 h-12 rounded-xl object-cover border-2 border-indigo-100">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Emmanuel Okafor</h4>
+                                    <p class="text-xs text-gray-500">Agent • 300L Computer Science</p>
+                                </div>
+                                <button onclick="callAgent()" class="ml-auto w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600">
+                                    <i class="fas fa-phone"></i>
+                                </button>
+                            </div>
+
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center gap-2 text-sm text-gray-600">
+                                    <i class="fas fa-map-marker-alt text-indigo-500 w-5"></i>
+                                    <span id="orderLocationDisplay">Olive Hostel, Room 5</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-600">
+                                    <i class="fas fa-truck text-orange-500 w-5"></i>
+                                    <span>Driver: 08098765432</span>
+                                </div>
+                            </div>
+
+                            <!-- Progress -->
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-700">Agent Assigned</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs animate-pulse">
+                                        <i class="fas fa-walking"></i>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-700">Heading to Gate</span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2 mt-4">
+                                <button onclick="openStudentChat()" class="flex-1 bg-indigo-50 text-indigo-700 py-2 rounded-xl text-sm font-medium hover:bg-indigo-100 transition">
+                                    <i class="fas fa-comment mr-1"></i> Chat
+                                </button>
+                                <button onclick="callExternalDriver()" class="flex-1 bg-orange-50 text-orange-700 py-2 rounded-xl text-sm font-medium hover:bg-orange-100 transition">
+                                    <i class="fas fa-phone mr-1"></i> Call Driver
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent History -->
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-3 px-1">Recent Deliveries</h3>
+                    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-sm text-gray-800">Olive Hostel, Room 3</p>
+                                <p class="text-xs text-gray-500">Yesterday • ₦500</p>
+                            </div>
+                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Completed</span>
+                        </div>
+                        <div class="p-4 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-sm text-gray-800">Camp David, Room 12</p>
+                                <p class="text-xs text-gray-500">2 days ago • ₦500</p>
+                            </div>
+                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Nav -->
+            <div class="fixed bottom-0 w-full bg-white border-t border-gray-200 px-6 py-3 flex justify-between items-center z-50">
+                <button class="flex flex-col items-center gap-1 text-indigo-600">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-[10px] font-medium">Home</span>
+                </button>
+                <button onclick="showNewOrder()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-plus-circle text-xl"></i>
+                    <span class="text-[10px] font-medium">Order</span>
+                </button>
+                <button onclick="showSavedLocations()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-map-marker-alt text-xl"></i>
+                    <span class="text-[10px] font-medium">Locations</span>
+                </button>
+                <button onclick="showStudentProfile()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-user text-xl"></i>
+                    <span class="text-[10px] font-medium">Profile</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- NEW ORDER - LOCATION SELECTION -->
+        <div id="newOrderSection" class="hidden h-full flex flex-col bg-white slide-up">
+            <div class="gradient-bg text-white px-6 py-4 sticky top-0 z-50 flex items-center gap-3">
+                <button onclick="backToDashboard()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div>
+                    <h1 class="font-bold text-lg">New Delivery Request</h1>
+                    <p class="text-xs text-white/80">Where should we deliver?</p>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto hide-scrollbar p-4 pb-24 space-y-4">
+                
+                <!-- Saved Locations -->
+                <div id="savedLocationsList" class="hidden">
+                    <h3 class="font-bold text-gray-800 mb-3">Saved Locations</h3>
+                    <div id="savedLocationsContainer" class="space-y-3">
+                        <!-- Dynamically populated -->
+                    </div>
+                    <div class="border-t border-gray-200 my-4"></div>
+                </div>
+
+                <!-- Add New Location -->
+                <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100">
+                    <h3 class="font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                        <i class="fas fa-plus-circle"></i> Add New Location
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button onclick="selectOrderGender('male')" id="orderGenderMale" class="order-gender-btn py-3 px-4 rounded-xl border-2 border-gray-200 bg-white flex items-center justify-center gap-2 hover:border-indigo-500 transition">
+                                    <i class="fas fa-male text-blue-500"></i>
+                                    <span class="font-medium">Male</span>
+                                </button>
+                                <button onclick="selectOrderGender('female')" id="orderGenderFemale" class="order-gender-btn py-3 px-4 rounded-xl border-2 border-gray-200 bg-white flex items-center justify-center gap-2 hover:border-indigo-500 transition">
+                                    <i class="fas fa-female text-pink-500"></i>
+                                    <span class="font-medium">Female</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Hostel</label>
+                            <select id="orderHostel" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition bg-white" onchange="updateRoomOptions()">
+                                <option value="">Select Hostel</option>
+                                <option value="Camp David" class="male-hostel">Camp David Hostel (Male)</option>
+                                <option value="Boys Hostel" class="male-hostel">Boys Hostel (Male)</option>
+                                <option value="Olive Hostel" class="female-hostel">Olive Hostel (Female)</option>
+                                <option value="Achievers Hostel" class="female-hostel">Achievers Hostel (Female)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Room Number</label>
+                            <select id="orderRoom" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition bg-white">
+                                <option value="">Select Room</option>
+                                <option value="Room 1">Room 1</option>
+                                <option value="Room 2">Room 2</option>
+                                <option value="Room 3">Room 3</option>
+                                <option value="Room 4">Room 4</option>
+                                <option value="Room 5">Room 5</option>
+                                <option value="Room 6">Room 6</option>
+                                <option value="Room 7">Room 7</option>
+                                <option value="Room 8">Room 8</option>
+                                <option value="Room 9">Room 9</option>
+                                <option value="Room 10">Room 10</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Location Nickname (Optional)</label>
+                            <input type="text" id="locationNickname" placeholder="e.g., My Room, Sarah's Room, etc." class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="saveLocation" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500" checked>
+                            <label for="saveLocation" class="text-sm text-gray-700">Save this location for future orders</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery Details -->
+                <div class="bg-white rounded-2xl border border-gray-200 p-4 space-y-4">
+                    <h3 class="font-bold text-gray-800">Delivery Details</h3>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">External Driver's Phone <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-3.5 text-gray-500 font-medium">+234</span>
+                            <input type="tel" id="externalDriverPhone" placeholder="8098765432" class="w-full pl-14 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">The delivery man at the school gate</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">What are you expecting?</label>
+                        <input type="text" id="orderDescription" placeholder="e.g., Rice & Chicken from Amala Spot" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Special Instructions</label>
+                        <textarea id="specialInstructions" rows="3" placeholder="e.g., Call me when you reach the gate, I'm in the room studying" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition resize-none"></textarea>
+                    </div>
+                </div>
+
+                <button onclick="submitOrder()" class="w-full gradient-bg text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95">
+                    Find Delivery Agent <i class="fas fa-paper-plane ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SEARCHING FOR AGENT -->
+        <div id="searchingSection" class="hidden h-full flex flex-col items-center justify-center bg-white p-8 text-center slide-up">
+            <div class="relative w-32 h-32 mb-6">
+                <div class="absolute inset-0 bg-indigo-400 rounded-full pulse-ring opacity-75"></div>
+                <div class="absolute inset-4 bg-indigo-500 rounded-full pulse-ring opacity-50" style="animation-delay: 0.5s"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-20 h-20 bg-white rounded-full shadow-xl flex items-center justify-center">
+                        <i class="fas fa-search text-indigo-600 text-2xl animate-bounce"></i>
+                    </div>
+                </div>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Finding Available Agent...</h3>
+            <p class="text-gray-500 mb-6">Matching you with a nearby student delivery agent</p>
+            
+            <div class="bg-gray-50 rounded-xl p-4 max-w-xs w-full">
+                <div class="flex items-center gap-3 text-sm text-gray-600">
+                    <i class="fas fa-clock text-indigo-500"></i>
+                    <span>Estimated wait: 2-5 minutes</span>
+                </div>
+            </div>
+
+            <button onclick="cancelSearch()" class="mt-8 text-red-500 font-medium hover:text-red-600 transition">
+                Cancel Request
+            </button>
+        </div>
+
+        <!-- AGENT DASHBOARD -->
+        <div id="agentDashboard" class="hidden h-full flex flex-col bg-gray-50 slide-up">
+            <!-- Header -->
+            <div class="gradient-bg text-white px-6 py-4 sticky top-0 z-50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="font-bold text-xl">QuickJob Agent</h1>
+                        <p class="text-xs text-white/80" id="agentWelcomeName">Welcome!</p>
+                    </div>
+                    
+                    <!-- Online Toggle -->
+                    <div class="flex items-center gap-2 bg-white/10 rounded-full px-3 py-1.5 backdrop-blur-sm">
+                        <span class="text-xs font-medium" id="agentStatusText">Offline</span>
+                        <div class="relative inline-block w-10 h-5 align-middle select-none">
+                            <input type="checkbox" id="agentOnlineToggle" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 left-0" onchange="toggleAgentOnline()">
+                            <label for="agentOnlineToggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-400 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto hide-scrollbar p-4 pb-24 space-y-4">
+                
+                <!-- Stats -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-800 text-white p-4 rounded-2xl">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-wallet text-indigo-300"></i>
+                            <span class="text-xs text-gray-300">Today's Earnings</span>
+                        </div>
+                        <p class="text-2xl font-bold">₦0</p>
+                        <p class="text-xs text-gray-400 mt-1">0 deliveries</p>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200 p-4 rounded-2xl">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-xs text-gray-500">Rating</span>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-800">5.0</p>
+                        <p class="text-xs text-gray-400 mt-1">New agent</p>
+                    </div>
+                </div>
+
+                <!-- Offline Status -->
+                <div id="agentOfflineState" class="bg-gray-100 rounded-2xl p-8 text-center">
+                    <div class="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-power-off text-gray-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-700 mb-2">You're Offline</h3>
+                    <p class="text-sm text-gray-500 mb-4">Toggle online to start receiving delivery requests</p>
+                    <button onclick="document.getElementById('agentOnlineToggle').click()" class="gradient-bg text-white px-6 py-3 rounded-xl font-medium shadow-lg">
+                        Go Online Now
+                    </button>
+                </div>
+
+                <!-- Online Waiting State -->
+                <div id="agentOnlineState" class="hidden bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
+                    <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4 pulse-animation">
+                        <i class="fas fa-signal text-white text-3xl"></i>
+                    </div>
+                    <h3 class="font-bold text-green-900 text-xl mb-2">You're Online!</h3>
+                    <p class="text-green-700 mb-4">Waiting for delivery requests near you...</p>
+                    <div class="flex items-center justify-center gap-2 text-sm text-green-600">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        <span>8 students looking for agents</span>
+                    </div>
+                </div>
+
+                <!-- New Request Card (Hidden by default) -->
+                <div id="newRequestCard" class="hidden bg-white rounded-2xl shadow-lg border-2 border-indigo-500 overflow-hidden slide-up">
+                    <div class="bg-indigo-600 text-white p-4 flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wide">New Request</span>
+                        <span class="text-xs bg-white/20 px-2 py-1 rounded-full">30s</span>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-xl">
+                                👤
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Sarah Johnson</h4>
+                                <p class="text-xs text-gray-500">Olive Hostel • Room 7 • Female</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-xl p-3 mb-4 space-y-2">
+                            <div class="flex items-center gap-2 text-sm">
+                                <i class="fas fa-truck text-orange-500 w-5"></i>
+                                <span class="text-gray-700">Driver: 08098765432</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <i class="fas fa-utensils text-gray-400 w-5"></i>
+                                <span class="text-gray-600">Jollof Rice from Amala Spot</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="declineRequest()" class="py-3 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-50 transition">
+                                Decline
+                            </button>
+                            <button onclick="acceptRequest()" class="py-3 rounded-xl gradient-bg text-white font-bold shadow-lg hover:shadow-xl transition transform active:scale-95">
+                                Accept
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Nav -->
+            <div class="fixed bottom-0 w-full bg-white border-t border-gray-200 px-6 py-3 flex justify-between items-center z-50">
+                <button class="flex flex-col items-center gap-1 text-indigo-600">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-[10px] font-medium">Home</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 text-gray-400">
+                    <i class="fas fa-history text-xl"></i>
+                    <span class="text-[10px] font-medium">History</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 text-gray-400">
+                    <i class="fas fa-wallet text-xl"></i>
+                    <span class="text-[10px] font-medium">Earnings</span>
+                </button>
+                <button onclick="showAgentProfile()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-user text-xl"></i>
+                    <span class="text-[10px] font-medium">Profile</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- AGENT ACTIVE DELIVERY -->
+        <div id="agentActiveDelivery" class="hidden h-full flex flex-col bg-white slide-up">
+            <div class="gradient-bg text-white px-6 py-4 sticky top-0 z-50 flex items-center gap-3">
+                <button onclick="backToAgentDashboard()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div>
+                    <h1 class="font-bold text-lg">Active Delivery</h1>
+                    <p class="text-xs text-white/80">Order #QJ-001</p>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto hide-scrollbar p-4 pb-24 space-y-4">
+                
+                <!-- Customer Info -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <img src="https://i.pravatar.cc/150?img=5" alt="Customer" class="w-14 h-14 rounded-2xl object-cover border-2 border-indigo-100">
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">Sarah Johnson</h3>
+                                <p class="text-sm text-indigo-600 font-medium">Olive Hostel • Room 7</p>
+                                <p class="text-xs text-gray-500">08012345678</p>
+                            </div>
+                        </div>
+                        <button onclick="callCustomer()" class="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 hover:bg-indigo-100 transition">
+                            <i class="fas fa-phone text-lg"></i>
+                        </button>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl p-3 space-y-2">
+                        <p class="text-sm text-gray-600"><i class="fas fa-truck text-orange-500 mr-2"></i>Driver: 08098765432</p>
+                        <p class="text-sm text-gray-600"><i class="fas fa-utensils text-gray-400 mr-2"></i>Jollof Rice from Amala Spot</p>
+                    </div>
+                </div>
+
+                <!-- Progress Steps -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
+                    <h4 class="font-bold text-gray-800 mb-4">Update Progress</h4>
+                    
+                    <div class="space-y-4">
+                        <button onclick="updateAgentStep(1)" id="agentStep1" class="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-gray-200 hover:border-indigo-500 transition text-left">
+                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 transition-all">
+                                <i class="fas fa-walking"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">Heading to School Gate</p>
+                                <p class="text-xs text-gray-500">Click when you start moving</p>
+                            </div>
+                        </button>
+
+                        <button onclick="updateAgentStep(2)" id="agentStep2" class="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-gray-200 hover:border-indigo-500 transition text-left opacity-50" disabled>
+                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 transition-all">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">Picked Up from Driver</p>
+                                <p class="text-xs text-gray-500">Meet driver at gate</p>
+                            </div>
+                        </button>
+
+                        <button onclick="updateAgentStep(3)" id="agentStep3" class="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-gray-200 hover:border-indigo-500 transition text-left opacity-50" disabled>
+                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 transition-all">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">Going to Hostel</p>
+                                <p class="text-xs text-gray-500">Deliver to room</p>
+                            </div>
+                        </button>
+
+                        <button onclick="updateAgentStep(4)" id="agentStep4" class="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-gray-200 hover:border-indigo-500 transition text-left opacity-50" disabled>
+                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 transition-all">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">Delivered</p>
+                                <p class="text-xs text-gray-500">Hand over to customer</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="callExternalDriver()" class="bg-orange-50 text-orange-700 py-3 rounded-xl font-medium hover:bg-orange-100 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-truck"></i> Call Driver
+                    </button>
+                    <button onclick="openAgentChat()" class="bg-indigo-50 text-indigo-700 py-3 rounded-xl font-medium hover:bg-indigo-100 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-comment"></i> Chat
+                    </button>
+                </div>
+
+                <button onclick="completeAgentDelivery()" id="agentCompleteBtn" class="w-full bg-gray-300 text-gray-500 font-bold py-4 rounded-xl cursor-not-allowed transition" disabled>
+                    Confirm Delivery Complete
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Modal (Shared) -->
+        <div id="chatModal" class="hidden fixed inset-0 bg-black/50 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+            <div class="bg-white w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl h-[80vh] sm:h-[600px] flex flex-col slide-up">
+                <div class="p-4 border-b flex items-center justify-between bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-t-3xl">
+                    <div class="flex items-center gap-3">
+                        <img id="chatAvatar" src="https://i.pravatar.cc/150?img=11" class="w-10 h-10 rounded-full border-2 border-white">
+                        <div>
+                            <h3 id="chatName" class="font-bold">Emmanuel Okafor</h3>
+                            <p id="chatStatus" class="text-xs text-white/80 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span> Online
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="closeChat()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition">
+                        <i class="fas fa-times text-white"></i>
+                    </button>
+                </div>
+                
+                <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+                    <!-- Messages populated dynamically -->
+                </div>
+
+                <div class="p-4 border-t bg-white">
+                    <div class="flex gap-2">
+                        <input type="text" id="chatInput" placeholder="Type a message..." class="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 outline-none" onkeypress="handleChatKey(event)">
+                        <button onclick="sendChatMessage()" class="w-12 h-12 gradient-bg rounded-xl text-white flex items-center justify-center hover:shadow-lg transition">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saved Locations Modal -->
+        <div id="savedLocationsModal" class="hidden fixed inset-0 bg-black/50 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+            <div class="bg-white w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl max-h-[80vh] flex flex-col slide-up">
+                <div class="p-4 border-b flex items-center justify-between">
+                    <h3 class="font-bold text-lg text-gray-800">My Saved Locations</h3>
+                    <button onclick="closeSavedLocations()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-times text-gray-600"></i>
+                    </button>
+                </div>
+                
+                <div id="savedLocationsListModal" class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <div class="p-4 border-t">
+                    <button onclick="closeSavedLocations(); showNewOrder();" class="w-full gradient-bg text-white font-bold py-3 rounded-xl">
+                        <i class="fas fa-plus mr-2"></i> Add New Location
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Global Data
+        let currentRole = '';
+        let userData = {
+            name: '',
+            studentId: '',
+            phone: '',
+            gender: '',
+            department: '',
+            photo: ''
+        };
+        
+        let savedLocations = [];
+        let currentOrder = null;
+        let currentChat = 'agent'; // 'agent' or 'customer'
+
+        // Role Selection
+        function selectRole(role) {
+            currentRole = role;
+            document.getElementById('roleSelection').classList.add('hidden');
+            
+            if (role === 'agent') {
+                document.getElementById('agentSignup').classList.remove('hidden');
+            } else {
+                document.getElementById('studentSignup').classList.remove('hidden');
+            }
+        }
+
+        // Agent Gender Selection
+        function selectAgentGender(gender) {
+            userData.gender = gender;
+            document.querySelectorAll('.agent-gender-btn').forEach(btn => {
+                btn.classList.remove('border-indigo-500', 'bg-indigo-50');
+                btn.classList.add('border-gray-200');
+            });
+            
+            const selectedBtn = document.getElementById('agentGender' + (gender === 'male' ? 'Male' : 'Female'));
+            selectedBtn.classList.remove('border-gray-200');
+            selectedBtn.classList.add('border-indigo-500', 'bg-indigo-50');
+        }
+
+        // Preview Photo
+        function previewPhoto(input, previewId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(previewId).src = e.target.result;
+                    document.getElementById(previewId).classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Complete Agent Signup
+        function completeAgentSignup() {
+            const name = document.getElementById('agentFullName').value;
+            const id = document.getElementById('agentStudentId').value;
+            const dept = document.getElementById('agentDepartment').value;
+            const phone = document.getElementById('agentPhone').value;
+            
+            if (!name || !id || !dept || !phone || !userData.gender) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            userData.name = name;
+            userData.studentId = id;
+            userData.phone = phone;
+            userData.department = dept;
+            
+            document.getElementById('agentSignup').classList.add('hidden');
+            document.getElementById('agentDashboard').classList.remove('hidden');
+            document.getElementById('agentWelcomeName').textContent = 'Welcome, ' + name.split(' ')[0] + '!';
+        }
+
+        // Complete Student Signup
+        function completeStudentSignup() {
+            const name = document.getElementById('studentFullName').value;
+            const id = document.getElementById('studentIdCard').value;
+            const phone = document.getElementById('studentPhone').value;
+            
+            if (!name || !id || !phone) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            userData.name = name;
+            userData.studentId = id;
+            userData.phone = phone;
+            userData.department = document.getElementById('studentDepartment').value;
+            
+            document.getElementById('studentSignup').classList.add('hidden');
+            document.getElementById('studentDashboard').classList.remove('hidden');
+            document.getElementById('studentWelcomeName').textContent = 'Welcome, ' + name.split(' ')[0] + '!';
+        }
+
+        // Student Dashboard Functions
+        function showNewOrder() {
+            document.getElementById('studentDashboard').classList.add('hidden');
+            document.getElementById('newOrderSection').classList.remove('hidden');
+            
+            // Show saved locations if any
+            if (savedLocations.length > 0) {
+                document.getElementById('savedLocationsList').classList.remove('hidden');
+                const container = document.getElementById('savedLocationsContainer');
+                container.innerHTML = '';
+                
+                savedLocations.forEach((loc, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'saved-location bg-white border border-gray-200 rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:border-indigo-500 transition';
+                    div.onclick = () => selectSavedLocation(index);
+                    div.innerHTML = `
+                        <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-sm text-gray-800">${loc.nickname || loc.hostel + ' ' + loc.room}</p>
+                            <p class="text-xs text-gray-500">${loc.hostel} • ${loc.room}</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        function backToDashboard() {
+            document.getElementById('newOrderSection').classList.add('hidden');
+            document.getElementById('searchingSection').classList.add('hidden');
+            document.getElementById('studentDashboard').classList.remove('hidden');
+        }
+
+        function selectSavedLocation(index) {
+            const loc = savedLocations[index];
+            document.getElementById('orderHostel').value = loc.hostel;
+            document.getElementById('orderRoom').value = loc.room;
+            
+            // Update gender based on hostel
+            const maleHostels = ['Camp David', 'Boys Hostel'];
+            if (maleHostels.includes(loc.hostel)) {
+                selectOrderGender('male');
+            } else {
+                selectOrderGender('female');
+            }
+        }
+
+        function selectOrderGender(gender) {
+            document.querySelectorAll('.order-gender-btn').forEach(btn => {
+                btn.classList.remove('border-indigo-500', 'bg-indigo-50');
+                btn.classList.add('border-gray-200');
+            });
+            
+            const selectedBtn = document.getElementById('orderGender' + (gender === 'male' ? 'Male' : 'Female'));
+            selectedBtn.classList.remove('border-gray-200');
+            selectedBtn.classList.add('border-indigo-500', 'bg-indigo-50');
+            
+            // Filter hostels
+            const hostelSelect = document.getElementById('orderHostel');
+            Array.from(hostelSelect.options).forEach(option => {
+                if (option.value === '') return;
+                if (gender === 'male') {
+                    option.style.display = option.classList.contains('male-hostel') ? 'block' : 'none';
+                } else {
+                    option.style.display = option.classList.contains('female-hostel') ? 'block' : 'none';
+                }
+            });
+        }
+
+        function updateRoomOptions() {
+            // Room options are already populated 1-10
+        }
+
+        function submitOrder() {
+            const hostel = document.getElementById('orderHostel').value;
+            const room = document.getElementById('orderRoom').value;
+            const driverPhone = document.getElementById('externalDriverPhone').value;
+            const nickname = document.getElementById('locationNickname').value;
+            const saveLoc = document.getElementById('saveLocation').checked;
+            
+            if (!hostel || !room || !driverPhone) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Save location if requested
+            if (saveLoc) {
+                const exists = savedLocations.some(l => l.hostel === hostel && l.room === room);
+                if (!exists) {
+                    savedLocations.push({
+                        hostel: hostel,
+                        room: room,
+                        nickname: nickname || (hostel + ' ' + room),
+                        gender: document.getElementById('orderGenderMale').classList.contains('border-indigo-500') ? 'male' : 'female'
+                    });
+                    document.getElementById('savedLocationCount').textContent = savedLocations.length + ' saved';
+                }
+            }
+            
+            currentOrder = {
+                hostel: hostel,
+                room: room,
+                driverPhone: driverPhone,
+                description: document.getElementById('orderDescription').value,
+                instructions: document.getElementById('specialInstructions').value
+            };
+            
+            document.getElementById('orderLocationDisplay').textContent = hostel + ', ' + room;
+            
+            document.getElementById('newOrderSection').classList.add('hidden');
+            document.getElementById('searchingSection').classList.remove('hidden');
+            
+            // Simulate finding agent
+            setTimeout(() => {
+                document.getElementById('searchingSection').classList.add('hidden');
+                document.getElementById('studentDashboard').classList.remove('hidden');
+                document.getElementById('noActiveOrders').classList.add('hidden');
+                document.getElementById('activeOrderCard').classList.remove('hidden');
+            }, 3000);
+        }
+
+        function cancelSearch() {
+            document.getElementById('searchingSection').classList.add('hidden');
+            document.getElementById('newOrderSection').classList.remove('hidden');
+        }
+
+        function callAgent() {
+            alert('Calling agent: 08012345678');
+        }
+
+        function callExternalDriver() {
+            window.location.href = 'tel:' + (currentOrder ? currentOrder.driverPhone : '08098765432');
+        }
+
+        function openStudentChat() {
+            currentChat = 'agent';
+            document.getElementById('chatAvatar').src = 'https://i.pravatar.cc/150?img=11';
+            document.getElementById('chatName').textContent = 'Emmanuel Okafor';
+            document.getElementById('chatStatus').innerHTML = '<span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span> Agent • Online';
+            
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = `
+                <div class="flex justify-center">
+                    <span class="text-xs text-gray-400 bg-gray-200 px-3 py-1 rounded-full">Today 2:30 PM</span>
+                </div>
+                <div class="flex gap-2">
+                    <img src="https://i.pravatar.cc/150?img=11" class="w-8 h-8 rounded-full mt-1">
+                    <div class="bg-white rounded-2xl rounded-tl-none px-4 py-2 shadow-sm max-w-[80%]">
+                        <p class="text-sm text-gray-800">Hi! I'm Emmanuel, your QuickJob agent. I've picked up your order from the driver at the gate. Heading to your hostel now!</p>
+                        <span class="text-xs text-gray-400 mt-1 block">2:30 PM</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('chatModal').classList.remove('hidden');
+        }
+
+        // Agent Dashboard Functions
+        function toggleAgentOnline() {
+            const toggle = document.getElementById('agentOnlineToggle');
+            const statusText = document.getElementById('agentStatusText');
+            
+            if (toggle.checked) {
+                statusText.textContent = 'Online';
+                statusText.classList.add('text-green-400');
+                document.getElementById('agentOfflineState').classList.add('hidden');
+                document.getElementById('agentOnlineState').classList.remove('hidden');
+                
+                // Simulate incoming request after 5 seconds
+                setTimeout(() => {
+                    if (toggle.checked) {
+                        document.getElementById('newRequestCard').classList.remove('hidden');
+                        if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+                    }
+                }, 5000);
+            } else {
+                statusText.textContent = 'Offline';
+                statusText.classList.remove('text-green-400');
+                document.getElementById('agentOfflineState').classList.remove('hidden');
+                document.getElementById('agentOnlineState').classList.add('hidden');
+                document.getElementById('newRequestCard').classList.add('hidden');
+            }
+        }
+
+        function acceptRequest() {
+            document.getElementById('agentDashboard').classList.add('hidden');
+            document.getElementById('agentActiveDelivery').classList.remove('hidden');
+            document.getElementById('newRequestCard').classList.add('hidden');
+        }
+
+        function declineRequest() {
+            document.getElementById('newRequestCard').classList.add('hidden');
+            setTimeout(() => {
+                if (document.getElementById('agentOnlineToggle').checked) {
+                    document.getElementById('newRequestCard').classList.remove('hidden');
+                }
+            }, 4000);
+        }
+
+        function backToAgentDashboard() {
+            document.getElementById('agentActiveDelivery').classList.add('hidden');
+            document.getElementById('agentDashboard').classList.remove('hidden');
+        }
+
+        let agentCurrentStep = 0;
+
+        function updateAgentStep(step) {
+            // Validate previous steps
+            if (step > 1 && agentCurrentStep < step - 1) {
+                alert('Please complete previous steps first');
+                return;
+            }
+            
+            agentCurrentStep = step;
+            
+            // Update UI for all steps up to current
+            for (let i = 1; i <= step; i++) {
+                const btn = document.getElementById('agentStep' + i);
+                const icon = btn.querySelector('div');
+                
+                icon.classList.remove('bg-gray-200', 'text-gray-600');
+                icon.classList.add('bg-green-500', 'text-white');
+                icon.innerHTML = '<i class="fas fa-check"></i>';
+                btn.classList.remove('opacity-50');
+                btn.disabled = false;
+                
+                if (i < 4) {
+                    const nextBtn = document.getElementById('agentStep' + (i + 1));
+                    nextBtn.classList.remove('opacity-50');
+                    nextBtn.disabled = false;
+                }
+            }
+            
+            // Enable complete button at step 4
+            if (step === 4) {
+                const completeBtn = document.getElementById('agentCompleteBtn');
+                completeBtn.disabled = false;
+                completeBtn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                completeBtn.classList.add('gradient-bg', 'text-white', 'hover:shadow-xl');
+            }
+        }
+
+        function callCustomer() {
+            alert('Calling customer: 08012345678');
+        }
+
+        function openAgentChat() {
+            currentChat = 'customer';
+            document.getElementById('chatAvatar').src = 'https://i.pravatar.cc/150?img=5';
+            document.getElementById('chatName').textContent = 'Sarah Johnson';
+            document.getElementById('chatStatus').innerHTML = '<span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span> Customer • Online';
+            
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = `
+                <div class="flex justify-center">
+                    <span class="text-xs text-gray-400 bg-gray-200 px-3 py-1 rounded-full">Today 2:35 PM</span>
+                </div>
+                <div class="flex gap-2 flex-row-reverse">
+                    <div class="gradient-bg text-white rounded-2xl rounded-tr-none px-4 py-2 max-w-[80%]">
+                        <p class="text-sm">Hi! I'm heading to your hostel now. Should be there in 3 minutes.</p>
+                        <span class="text-xs text-white/70 mt-1 block text-right">2:35 PM</span>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <img src="https://i.pravatar.cc/150?img=5" class="w-8 h-8 rounded-full mt-1">
+                    <div class="bg-white rounded-2xl rounded-tl-none px-4 py-2 shadow-sm max-w-[80%]">
+                        <p class="text-sm text-gray-800">Thanks! I'm in Room 7, first floor.</p>
+                        <span class="text-xs text-gray-400 mt-1 block">2:36 PM</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('chatModal').classList.remove('hidden');
+        }
+
+        function completeAgentDelivery() {
+            document.getElementById('agentActiveDelivery').classList.add('hidden');
+            document.getElementById('agentDashboard').classList.remove('hidden');
+            
+            // Reset
+            agentCurrentStep = 0;
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById('agentStep' + i);
+                const icon = btn.querySelector('div');
+                icon.classList.remove('bg-green-500', 'text-white');
+                icon.classList.add('bg-gray-200', 'text-gray-600');
+                const icons = ['fa-walking', 'fa-handshake', 'fa-route', 'fa-home'];
+                icon.innerHTML = `<i class="fas ${icons[i-1]}"></i>`;
+                if (i > 1) {
+                    btn.classList.add('opacity-50');
+                    btn.disabled = true;
+                }
+            }
+            
+            const completeBtn = document.getElementById('agentCompleteBtn');
+            completeBtn.disabled = true;
+            completeBtn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+            completeBtn.classList.remove('gradient-bg', 'text-white', 'hover:shadow-xl');
+            
+            alert('Delivery completed! You earned ₦500');
+        }
+
+        // Chat Functions
+        function closeChat() {
+            document.getElementById('chatModal').classList.add('hidden');
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // User message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'flex gap-2 flex-row-reverse';
+            userDiv.innerHTML = `
+                <div class="gradient-bg text-white rounded-2xl rounded-tr-none px-4 py-2 max-w-[80%]">
+                    <p class="text-sm">${text}</p>
+                    <span class="text-xs text-white/70 mt-1 block text-right">Just now</span>
+                </div>
+            `;
+            chatMessages.appendChild(userDiv);
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Simulate reply
+            setTimeout(() => {
+                const replies = currentChat === 'agent' ? 
+                    ["Got it! I'm almost there.", "Thanks for the info!", "See you soon! 👍"] :
+                    ["Thanks! I'll be right there.", "Almost at your door!", "Thanks for using QuickJob! 🎉"];
+                const reply = replies[Math.floor(Math.random() * replies.length)];
+                
+                const replyDiv = document.createElement('div');
+                replyDiv.className = 'flex gap-2';
+                replyDiv.innerHTML = `
+                    <img src="${currentChat === 'agent' ? 'https://i.pravatar.cc/150?img=11' : 'https://i.pravatar.cc/150?img=5'}" class="w-8 h-8 rounded-full mt-1">
+                    <div class="bg-white rounded-2xl rounded-tl-none px-4 py-2 shadow-sm max-w-[80%]">
+                        <p class="text-sm text-gray-800">${reply}</p>
+                        <span class="text-xs text-gray-400 mt-1 block">Just now</span>
+                    </div>
+                `;
+                chatMessages.appendChild(replyDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1500);
+        }
+
+        function handleChatKey(e) {
+            if (e.key === 'Enter') sendChatMessage();
+        }
+
+        // Saved Locations Modal
+        function showSavedLocations() {
+            const container = document.getElementById('savedLocationsListModal');
+            container.innerHTML = '';
+            
+            if (savedLocations.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-map-marker-alt text-gray-400 text-2xl"></i>
+                        </div>
+                        <p class="text-gray-500 text-sm">No saved locations yet</p>
+                        <p class="text-xs text-gray-400 mt-1">Locations are saved when you place orders</p>
+                    </div>
+                `;
+            } else {
+                savedLocations.forEach((loc, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-3';
+                    div.innerHTML = `
+                        <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 text-xl">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-bold text-gray-800">${loc.nickname}</p>
+                            <p class="text-sm text-gray-500">${loc.hostel} • ${loc.room}</p>
+                        </div>
+                        <button onclick="deleteLocation(${index})" class="text-red-500 hover:text-red-600 p-2">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+            
+            document.getElementById('savedLocationsModal').classList.remove('hidden');
+        }
+
+        function closeSavedLocations() {
+            document.getElementById('savedLocationsModal').classList.add('hidden');
+        }
+
+        function deleteLocation(index) {
+            savedLocations.splice(index, 1);
+            document.getElementById('savedLocationCount').textContent = savedLocations.length + ' saved';
+            showSavedLocations();
+        }
+
+        // Profile Functions
+        function showStudentProfile() {
+            alert('Profile:\nName: ' + userData.name + '\nID: ' + userData.studentId + '\nPhone: ' + userData.phone);
+        }
+
+        function showAgentProfile() {
+            alert('Profile:\nName: ' + userData.name + '\nID: ' + userData.studentId + '\nPhone: ' + userData.phone + '\nGender: ' + userData.gender);
+        }
+    </script>
+</body>
+</html>
