@@ -117,9 +117,8 @@
                 max-width: 1200px;
                 margin: 0 auto;
                 width: 100%;
-            }
-        }
-        
+            } 
+        }  
         /* Toggle switch styling */
         .toggle-checkbox:checked {
             right: 0;
@@ -133,7 +132,7 @@
             transition: all 0.3s;
         }
         
-        /* Screen management - CRITICAL FIX */
+        /* Screen management - FIXED */
         .screen-container {
             position: relative;
             width: 100%;
@@ -151,17 +150,14 @@
             flex-direction: column;
             overflow: hidden;
             background: white;
+            z-index: 1;
         }
         
         .screen.active {
             display: flex;
-            z-index: 10;
+            z-index: 100 !important;
         }
-        
-        /* Ensure role selection is on top when active */
-        #roleSelection.active {
-            z-index: 20;
-        }
+
     </style>
 </head>
 <body class="bg-slate-50 h-screen w-screen overflow-hidden">
