@@ -133,60 +133,80 @@
             transition: all 0.3s;
         }
         
-        /* Screen management */
+        /* Screen management - CRITICAL FIX */
+        .screen-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
         .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: none;
-            flex: 1;
             flex-direction: column;
             overflow: hidden;
+            background: white;
         }
         
         .screen.active {
             display: flex;
+            z-index: 10;
+        }
+        
+        /* Ensure role selection is on top when active */
+        #roleSelection.active {
+            z-index: 20;
         }
     </style>
 </head>
 <body class="bg-slate-50 h-screen w-screen overflow-hidden">
 
     <!-- App Container - Full Screen -->
-    <div class="w-full h-full bg-white relative overflow-hidden flex flex-col" id="appContainer">
+    <div class="screen-container" id="appContainer">
         
         <!-- ROLE SELECTION (First Screen - No Going Back) -->
-        <div id="roleSelection" class="screen active flex-1 flex flex-col justify-center items-center p-4 md:p-8 gradient-bg text-white slide-up overflow-y-auto">
-            <div class="w-full max-w-4xl flex flex-col items-center">
-                <div class="w-24 h-24 bg-white/20 rounded-3xl flex items-center justify-center mb-6 backdrop-blur-sm">
-                    <i class="fas fa-bolt text-4xl"></i>
-                </div>
-                <h1 class="text-3xl md:text-4xl font-bold mb-2">QuickJob</h1>
-                <p class="text-white/80 mb-12 text-center text-lg">Lead City University<br>Campus Delivery Service</p>
-                
-                <p class="text-sm font-medium mb-6 text-white/90">Choose how you want to use the app:</p>
-                
-                <div class="w-full flex flex-col md:flex-row gap-4 justify-center items-stretch px-4">
-                    <button onclick="selectRole('agent')" class="role-card w-full md:w-80 bg-white text-gray-800 p-6 rounded-2xl shadow-xl flex items-center gap-4 hover:shadow-2xl cursor-pointer transform transition hover:scale-105 active:scale-95">
-                        <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
-                            🏃
-                        </div>
-                        <div class="text-left flex-1">
-                            <h3 class="font-bold text-lg">I want to WORK</h3>
-                            <p class="text-sm text-gray-500">Earn money delivering to hostels</p>
-                        </div>
-                        <i class="fas fa-arrow-right text-gray-400 ml-auto"></i>
-                    </button>
+        <div id="roleSelection" class="screen active gradient-bg text-white slide-up">
+            <div class="flex-1 flex flex-col justify-center items-center p-4 md:p-8 overflow-y-auto">
+                <div class="w-full max-w-4xl flex flex-col items-center">
+                    <div class="w-24 h-24 bg-white/20 rounded-3xl flex items-center justify-center mb-6 backdrop-blur-sm">
+                        <i class="fas fa-bolt text-4xl"></i>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-bold mb-2">QuickJob</h1>
+                    <p class="text-white/80 mb-12 text-center text-lg">Lead City University<br>Campus Delivery Service</p>
                     
-                    <button onclick="selectRole('student')" class="role-card w-full md:w-80 bg-white text-gray-800 p-6 rounded-2xl shadow-xl flex items-center gap-4 hover:shadow-2xl cursor-pointer transform transition hover:scale-105 active:scale-95">
-                        <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
-                            📦
-                        </div>
-                        <div class="text-left flex-1">
-                            <h3 class="font-bold text-lg">I want to REQUEST</h3>
-                            <p class="text-sm text-gray-500">Get food delivered to my room</p>
-                        </div>
-                        <i class="fas fa-arrow-right text-gray-400 ml-auto"></i>
-                    </button>
+                    <p class="text-sm font-medium mb-6 text-white/90">Choose how you want to use the app:</p>
+                    
+                    <div class="w-full flex flex-col md:flex-row gap-4 justify-center items-stretch px-4">
+                        <button onclick="selectRole('agent')" class="role-card w-full md:w-80 bg-white text-gray-800 p-6 rounded-2xl shadow-xl flex items-center gap-4 hover:shadow-2xl cursor-pointer transform transition hover:scale-105 active:scale-95">
+                            <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                                🏃
+                            </div>
+                            <div class="text-left flex-1">
+                                <h3 class="font-bold text-lg">I want to WORK</h3>
+                                <p class="text-sm text-gray-500">Earn money delivering to hostels</p>
+                            </div>
+                            <i class="fas fa-arrow-right text-gray-400 ml-auto"></i>
+                        </button>
+                        
+                        <button onclick="selectRole('student')" class="role-card w-full md:w-80 bg-white text-gray-800 p-6 rounded-2xl shadow-xl flex items-center gap-4 hover:shadow-2xl cursor-pointer transform transition hover:scale-105 active:scale-95">
+                            <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                                📦
+                            </div>
+                            <div class="text-left flex-1">
+                                <h3 class="font-bold text-lg">I want to REQUEST</h3>
+                                <p class="text-sm text-gray-500">Get food delivered to my room</p>
+                            </div>
+                            <i class="fas fa-arrow-right text-gray-400 ml-auto"></i>
+                        </button>
+                    </div>
+                    
+                    <p class="text-xs text-white/60 mt-8 text-center">This choice cannot be changed later<br>Create a new account to switch</p>
                 </div>
-                
-                <p class="text-xs text-white/60 mt-8 text-center">This choice cannot be changed later<br>Create a new account to switch</p>
             </div>
         </div>
 
@@ -617,8 +637,8 @@
         </div>
 
         <!-- SEARCHING FOR AGENT -->
-        <div id="searchingSection" class="screen bg-white slide-up items-center justify-center">
-            <div class="flex flex-col items-center justify-center p-8 text-center w-full">
+        <div id="searchingSection" class="screen bg-white slide-up">
+            <div class="flex flex-col items-center justify-center p-8 text-center w-full h-full">
                 <div class="relative w-32 h-32 mb-6">
                     <div class="absolute inset-0 bg-indigo-400 rounded-full pulse-ring opacity-75"></div>
                     <div class="absolute inset-4 bg-indigo-500 rounded-full pulse-ring opacity-50" style="animation-delay: 0.5s"></div>
@@ -970,17 +990,19 @@
         let currentOrder = null;
         let currentChat = 'agent'; // 'agent' or 'customer'
 
-        // Screen Navigation Function
+        // Screen Navigation Function - FIXED
         function showScreen(screenId) {
-            // Hide all screens
+            // Hide all screens by removing active class
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
             });
             
-            // Show target screen
+            // Show target screen by adding active class
             const targetScreen = document.getElementById(screenId);
             if (targetScreen) {
                 targetScreen.classList.add('active');
+                // Scroll to top of new screen
+                targetScreen.scrollTop = 0;
             }
         }
 
@@ -1337,7 +1359,7 @@
             
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = `
-                <div class="flex justify-center">
+                  <div class="flex justify-center">
                     <span class="text-xs text-gray-400 bg-gray-200 px-3 py-
 1 rounded-full">Today 2:35 PM</span>
                 </div>
