@@ -132,15 +132,27 @@
             right: 50%;
             transition: all 0.3s;
         }
+        
+        /* Screen management */
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
     </style>
 </head>
 <body class="bg-slate-50 h-screen w-screen overflow-hidden">
 
     <!-- App Container - Full Screen -->
-    <div class="w-full h-full bg-white relative overflow-hidden flex flex-col">
+    <div class="w-full h-full bg-white relative overflow-hidden flex flex-col" id="appContainer">
         
-                <!-- ROLE SELECTION (First Screen - No Going Back) -->
-        <div id="roleSelection" class="flex-1 flex flex-col justify-center items-center p-4 md:p-8 gradient-bg text-white slide-up overflow-y-auto relative z-10">
+        <!-- ROLE SELECTION (First Screen - No Going Back) -->
+        <div id="roleSelection" class="screen active flex-1 flex flex-col justify-center items-center p-4 md:p-8 gradient-bg text-white slide-up overflow-y-auto">
             <div class="w-full max-w-4xl flex flex-col items-center">
                 <div class="w-24 h-24 bg-white/20 rounded-3xl flex items-center justify-center mb-6 backdrop-blur-sm">
                     <i class="fas fa-bolt text-4xl"></i>
@@ -179,7 +191,7 @@
         </div>
 
         <!-- AGENT SIGN UP -->
-        <div id="agentSignup" class="hidden flex-1 flex flex-col bg-white slide-up overflow-hidden">
+        <div id="agentSignup" class="screen bg-white slide-up">
             <div class="gradient-bg text-white px-6 py-4 md:py-6 flex-shrink-0">
                 <div class="content-max-width w-full mx-auto flex items-center gap-3">
                     <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
@@ -256,7 +268,7 @@
         </div>
 
         <!-- STUDENT SIGN UP -->
-        <div id="studentSignup" class="hidden flex-1 flex flex-col bg-white slide-up overflow-hidden">
+        <div id="studentSignup" class="screen bg-white slide-up">
             <div class="gradient-bg text-white px-6 py-4 md:py-6 flex-shrink-0">
                 <div class="content-max-width w-full mx-auto flex items-center gap-3">
                     <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
@@ -308,7 +320,7 @@
         </div>
 
         <!-- STUDENT DASHBOARD -->
-        <div id="studentDashboard" class="hidden flex-1 flex flex-col bg-gray-50 slide-up overflow-hidden">
+        <div id="studentDashboard" class="screen bg-gray-50 slide-up">
             <!-- Header -->
             <div class="gradient-bg text-white px-6 py-4 flex-shrink-0">
                 <div class="content-max-width w-full mx-auto flex items-center justify-between">
@@ -485,7 +497,7 @@
         </div>
 
         <!-- NEW ORDER - LOCATION SELECTION -->
-        <div id="newOrderSection" class="hidden flex-1 flex flex-col bg-white slide-up overflow-hidden">
+        <div id="newOrderSection" class="screen bg-white slide-up">
             <div class="gradient-bg text-white px-6 py-4 flex-shrink-0 flex items-center gap-3">
                 <button onclick="backToDashboard()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition">
                     <i class="fas fa-arrow-left"></i>
@@ -605,33 +617,35 @@
         </div>
 
         <!-- SEARCHING FOR AGENT -->
-        <div id="searchingSection" class="hidden flex-1 flex flex-col items-center justify-center bg-white p-8 text-center slide-up">
-            <div class="relative w-32 h-32 mb-6">
-                <div class="absolute inset-0 bg-indigo-400 rounded-full pulse-ring opacity-75"></div>
-                <div class="absolute inset-4 bg-indigo-500 rounded-full pulse-ring opacity-50" style="animation-delay: 0.5s"></div>
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-20 h-20 bg-white rounded-full shadow-xl flex items-center justify-center">
-                        <i class="fas fa-search text-indigo-600 text-2xl animate-bounce"></i>
+        <div id="searchingSection" class="screen bg-white slide-up items-center justify-center">
+            <div class="flex flex-col items-center justify-center p-8 text-center w-full">
+                <div class="relative w-32 h-32 mb-6">
+                    <div class="absolute inset-0 bg-indigo-400 rounded-full pulse-ring opacity-75"></div>
+                    <div class="absolute inset-4 bg-indigo-500 rounded-full pulse-ring opacity-50" style="animation-delay: 0.5s"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-20 h-20 bg-white rounded-full shadow-xl flex items-center justify-center">
+                            <i class="fas fa-search text-indigo-600 text-2xl animate-bounce"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Finding Available Agent...</h3>
-            <p class="text-gray-500 mb-6">Matching you with a nearby student delivery agent</p>
-            
-            <div class="bg-gray-50 rounded-xl p-4 max-w-xs w-full">
-                <div class="flex items-center gap-3 text-sm text-gray-600">
-                    <i class="fas fa-clock text-indigo-500"></i>
-                    <span>Estimated wait: 2-5 minutes</span>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Finding Available Agent...</h3>
+                <p class="text-gray-500 mb-6">Matching you with a nearby student delivery agent</p>
+                
+                <div class="bg-gray-50 rounded-xl p-4 max-w-xs w-full">
+                    <div class="flex items-center gap-3 text-sm text-gray-600">
+                        <i class="fas fa-clock text-indigo-500"></i>
+                        <span>Estimated wait: 2-5 minutes</span>
+                    </div>
                 </div>
-            </div>
 
-            <button onclick="cancelSearch()" class="mt-8 text-red-500 font-medium hover:text-red-600 transition">
-                Cancel Request
-            </button>
+                <button onclick="cancelSearch()" class="mt-8 text-red-500 font-medium hover:text-red-600 transition">
+                    Cancel Request
+                </button>
+            </div>
         </div>
 
         <!-- AGENT DASHBOARD -->
-        <div id="agentDashboard" class="hidden flex-1 flex flex-col bg-gray-50 slide-up overflow-hidden">
+        <div id="agentDashboard" class="screen bg-gray-50 slide-up">
             <!-- Header -->
             <div class="gradient-bg text-white px-6 py-4 flex-shrink-0">
                 <div class="content-max-width w-full mx-auto flex items-center justify-between">
@@ -783,7 +797,7 @@
         </div>
 
         <!-- AGENT ACTIVE DELIVERY -->
-        <div id="agentActiveDelivery" class="hidden flex-1 flex flex-col bg-white slide-up overflow-hidden">
+        <div id="agentActiveDelivery" class="screen bg-white slide-up">
             <div class="gradient-bg text-white px-6 py-4 flex-shrink-0 flex items-center gap-3">
                 <button onclick="backToAgentDashboard()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition">
                     <i class="fas fa-arrow-left"></i>
@@ -956,15 +970,28 @@
         let currentOrder = null;
         let currentChat = 'agent'; // 'agent' or 'customer'
 
+        // Screen Navigation Function
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show target screen
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+            }
+        }
+
         // Role Selection
         function selectRole(role) {
             currentRole = role;
-            document.getElementById('roleSelection').classList.add('hidden');
             
             if (role === 'agent') {
-                document.getElementById('agentSignup').classList.remove('hidden');
+                showScreen('agentSignup');
             } else {
-                document.getElementById('studentSignup').classList.remove('hidden');
+                showScreen('studentSignup');
             }
         }
 
@@ -1023,8 +1050,7 @@
             userData.phone = phone;
             userData.department = dept;
             
-            document.getElementById('agentSignup').classList.add('hidden');
-            document.getElementById('agentDashboard').classList.remove('hidden');
+            showScreen('agentDashboard');
             document.getElementById('agentWelcomeName').textContent = 'Welcome, ' + name.split(' ')[0] + '!';
         }
 
@@ -1044,8 +1070,7 @@
             userData.phone = phone;
             userData.department = document.getElementById('studentDepartment').value;
             
-            document.getElementById('studentSignup').classList.add('hidden');
-            document.getElementById('studentDashboard').classList.remove('hidden');
+            showScreen('studentDashboard');
             document.getElementById('studentWelcomeName').textContent = 'Welcome, ' + name.split(' ')[0] + '!';
         }
 
@@ -1053,7 +1078,7 @@
         function showNotification(message, type = 'info') {
             // Create notification element
             const notif = document.createElement('div');
-            const colors = type === 'error' ? 'bg-red-500' : 'bg-indigo-600';
+            const colors = type === 'error' ? 'bg-red-500' : type === 'success' ? 'bg-green-500' : 'bg-indigo-600';
             notif.className = `fixed top-4 left-1/2 transform -translate-x-1/2 ${colors} text-white px-6 py-3 rounded-xl shadow-lg z-[70] text-sm font-medium`;
             notif.textContent = message;
             document.body.appendChild(notif);
@@ -1065,8 +1090,7 @@
 
         // Student Dashboard Functions
         function showNewOrder() {
-            document.getElementById('studentDashboard').classList.add('hidden');
-            document.getElementById('newOrderSection').classList.remove('hidden');
+            showScreen('newOrderSection');
             
             // Show saved locations if any
             if (savedLocations.length > 0) {
@@ -1094,9 +1118,7 @@
         }
 
         function backToDashboard() {
-            document.getElementById('newOrderSection').classList.add('hidden');
-            document.getElementById('searchingSection').classList.add('hidden');
-            document.getElementById('studentDashboard').classList.remove('hidden');
+            showScreen('studentDashboard');
         }
 
         function selectSavedLocation(index) {
@@ -1175,21 +1197,18 @@
             
             document.getElementById('orderLocationDisplay').textContent = hostel + ', ' + room;
             
-            document.getElementById('newOrderSection').classList.add('hidden');
-            document.getElementById('searchingSection').classList.remove('hidden');
+            showScreen('searchingSection');
             
             // Simulate finding agent
             setTimeout(() => {
-                document.getElementById('searchingSection').classList.add('hidden');
-                document.getElementById('studentDashboard').classList.remove('hidden');
+                showScreen('studentDashboard');
                 document.getElementById('noActiveOrders').classList.add('hidden');
                 document.getElementById('activeOrderCard').classList.remove('hidden');
             }, 3000);
         }
 
         function cancelSearch() {
-            document.getElementById('searchingSection').classList.add('hidden');
-            document.getElementById('newOrderSection').classList.remove('hidden');
+            showScreen('newOrderSection');
         }
 
         function callAgent() {
@@ -1251,8 +1270,7 @@
         }
 
         function acceptRequest() {
-            document.getElementById('agentDashboard').classList.add('hidden');
-            document.getElementById('agentActiveDelivery').classList.remove('hidden');
+            showScreen('agentActiveDelivery');
             document.getElementById('newRequestCard').classList.add('hidden');
         }
 
@@ -1266,8 +1284,7 @@
         }
 
         function backToAgentDashboard() {
-            document.getElementById('agentActiveDelivery').classList.add('hidden');
-            document.getElementById('agentDashboard').classList.remove('hidden');
+            showScreen('agentDashboard');
         }
 
         let agentCurrentStep = 0;
@@ -1319,7 +1336,7 @@
             document.getElementById('chatStatus').innerHTML = '<span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span> Customer • Online';
             
             const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML =
+            chatMessages.innerHTML = `
                 <div class="flex justify-center">
                     <span class="text-xs text-gray-400 bg-gray-200 px-3 py-1 rounded-full">Today 2:35 PM</span>
                 </div>
